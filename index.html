@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERO GRAVITY TRAVEL | Премиум Туризм</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --accent: #7000ff;
+            --danger: #ff0055;
+            --bg: #020205;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* DYNAMIC BACKGROUND */
+        #bg-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0.3) contrast(1.1);
+            transform: scale(1.1);
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, transparent, var(--bg));
+        }
+
+        /* NAVIGATION */
+        header {
+            position: fixed; top: 0; width: 100%;
+            padding: 30px; z-index: 1000;
+            display: flex; justify-content: center;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(30px);
+            padding: 10px 40px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            display: flex; gap: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.4);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            padding: 12px 20px;
+            transition: 0.4s;
+            cursor: pointer;
+            border-radius: 50px;
+        }
+
+        .nav-link:hover { color: #fff; }
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+        }
+
+        /* MAIN WRAPPER */
+        main {
+            padding-top: 180px;
+            min-height: 100vh;
+            display: flex; justify-content: center;
+            padding-bottom: 100px;
+        }
+
+        .page {
+            display: none;
+            width: 95%;
+            max-width: 1400px;
+            animation: slideIn 0.8s ease forwards;
+        }
+
+        .page.active { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* TYPOGRAPHY */
+        .hero-text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            line-height: 0.85;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+        }
+
+        .hero-text span {
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--primary);
+            display: block;
+        }
+
+        /* GRID SYSTEM */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .item-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-15px);
+            background: rgba(255,255,255,0.07);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 242, 255, 0.1);
+        }
+
+        .item-img {
+            width: 100%; height: 280px;
+            object-fit: cover;
+            transition: 0.8s;
+        }
+
+        .item-card:hover .item-img { transform: scale(1.1); filter: saturate(1.2); }
+
+        .item-badge {
+            position: absolute; top: 20px; right: 20px;
+            background: var(--danger); color: white;
+            padding: 6px 15px; border-radius: 50px;
+            font-size: 10px; font-weight: 900; text-transform: uppercase;
+        }
+
+        .item-body { padding: 30px; }
+        .item-location { color: var(--primary); font-size: 12px; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; }
+        .item-title { font-size: 22px; margin-bottom: 15px; font-weight: 800; }
+        .item-price { font-size: 28px; font-weight: 900; margin: 20px 0; }
+        .item-price span { font-size: 14px; opacity: 0.5; font-weight: 400; }
+
+        .btn-booking {
+            display: block; width: 100%; text-align: center;
+            padding: 18px; background: white; color: black;
+            text-decoration: none; font-weight: 900; border-radius: 12px;
+            text-transform: uppercase; transition: 0.3s;
+        }
+
+        .btn-booking:hover {
+            background: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        /* CONTACTS SECTION */
+        .contact-box {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+            background: var(--glass); padding: 60px; border-radius: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .info-row { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; }
+        .info-row i { font-size: 30px; color: var(--primary); width: 40px; }
+        .info-row div h4 { font-size: 14px; opacity: 0.5; text-transform: uppercase; }
+        .info-row div p { font-size: 22px; font-weight: 700; }
+
+        .insta-large {
+            display: inline-flex; align-items: center; gap: 15px;
+            padding: 20px 40px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            border-radius: 100px; color: white; text-decoration: none; font-weight: 800;
+            font-size: 18px; margin-top: 20px; transition: 0.4s;
+        }
+        .insta-large:hover { transform: translateY(-5px) rotate(-2deg); box-shadow: 0 10px 30px rgba(220, 39, 67, 0.4); }
+
+        footer {
+            margin-top: 100px; padding: 60px; text-align: center;
+            border-top: 1px solid var(--border);
+            letter-spacing: 10px; font-size: 10px; opacity: 0.3;
+        }
+
+        @media (max-width: 900px) {
+            .contact-box { grid-template-columns: 1fr; padding: 30px; }
+            header { padding: 15px; }
+            nav { gap: 5px; padding: 5px 15px; }
+            .nav-link { font-size: 9px; padding: 10px; }
+        }
+    </style>
+</head>
+<body onload="initBg()">
+
+    <div id="bg-layer"></div>
+    <div class="bg-overlay"></div>
+
+    <header>
+        <nav>
+            <div class="nav-link active" onclick="navigate('home', this)">Home</div>
+            <div class="nav-link" onclick="navigate('tours', this)">Tours</div>
+            <div class="nav-link" onclick="navigate('hotels', this)">Hotels</div>
+            <div class="nav-link" onclick="navigate('contact', this)">Contact</div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="page active">
+            <h1 class="hero-text">ULTIMATE<br><span>ADVENTURE</span></h1>
+            <p style="font-size: 22px; max-width: 700px; color: #aaa; margin-bottom: 50px; line-height: 1.6;">
+                Мы не просто бронируем билеты. Мы проектируем воспоминания, которые останутся с вами навсегда. 
+                Доступ к закрытым локациям и премиальный сервис в любой точке планеты.
+            </p>
+            <div style="display: flex; gap: 20px;">
+                <button class="btn-booking" style="width: 280px; background: var(--primary);" onclick="navigate('tours', document.querySelectorAll('.nav-link')[1])">Найти туры</button>
+                <button class="btn-booking" style="width: 280px; background: transparent; border: 1px solid white; color: white;" onclick="navigate('contact', document.querySelectorAll('.nav-link')[3])">Связаться</button>
+            </div>
+        </section>
+
+        <section id="tours" class="page">
+            <h2 class="hero-text">WORLD <span>EXPEDITIONS</span></h2>
+            <div class="catalog-grid">
+                <div class="item-card">
+                    <div class="item-badge">Bestseller</div>
+                    <img src="https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Таиланд, Пхи-Пхи</p>
+                        <h3 class="item-title">Острова баунти: Экспедиция</h3>
+                        <div class="item-price">420 000 ₸ <span>/ 10 дней</span></div>
+                        <a href="#" class="btn-booking">Забронировать</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-badge">Sale -30%</div>
+                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Исландия</p>
+                        <h3 class="item-title">Охота за Северным Сиянием</h3>
+                        <div class="item-price">680 000 ₸ <span>/ 7 дней</span></div>
+                        <a href="#" class="btn-booking">Забронировать</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Франция, Париж</p>
+                        <h3 class="item-title">Weekend в центре моды</h3>
+                        <div class="item-price">290 000 ₸ <span>/ 4 дня</span></div>
+                        <a href="#" class="btn-booking">Забронировать</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Марокко</p>
+                        <h3 class="item-title">Тайны древнего Марракеша</h3>
+                        <div class="item-price">350 000 ₸ <span>/ 8 дней</span></div>
+                        <a href="#" class="btn-booking">Забронировать</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <div class="item-badge" style="background:var(--primary)">New</div>
+                    <img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Италия, Амальфи</p>
+                        <h3 class="item-title">Жизнь в стиле La Dolce Vita</h3>
+                        <div class="item-price">540 000 ₸ <span>/ 7 дней</span></div>
+                        <a href="#" class="btn-booking">Забронировать</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Греция, Санторини</p>
+                        <h3 class="item-title">Белоснежный круиз по островам</h3>
+                        <div class="item-price">410 000 ₸ <span>/ 6 дней</span></div>
+                        <a href="#" class="btn-booking">Забронировать</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hotels" class="page">
+            <h2 class="hero-text">SMART <span>RESORTS</span></h2>
+            <div class="catalog-grid">
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">ОАЭ, Дубай</p>
+                        <h3 class="item-title">Atlantis The Royal</h3>
+                        <div class="item-price">180 000 ₸ <span>/ ночь</span></div>
+                        <a href="#" class="btn-booking">Смотреть номера</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Мальдивы</p>
+                        <h3 class="item-title">Six Senses Laamu</h3>
+                        <div class="item-price">250 000 ₸ <span>/ ночь</span></div>
+                        <a href="#" class="btn-booking">Смотреть номера</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Швейцария</p>
+                        <h3 class="item-title">The Chedi Andermatt</h3>
+                        <div class="item-price">140 000 ₸ <span>/ ночь</span></div>
+                        <a href="#" class="btn-booking">Смотреть номера</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Мексика, Канкун</p>
+                        <h3 class="item-title">Nizuc Resort & Spa</h3>
+                        <div class="item-price">95 000 ₸ <span>/ ночь</span></div>
+                        <a href="#" class="btn-booking">Смотреть номера</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Индонезия, Бали</p>
+                        <h3 class="item-title">Ayana Resort Villas</h3>
+                        <div class="item-price">110 000 ₸ <span>/ ночь</span></div>
+                        <a href="#" class="btn-booking">Смотреть номера</a>
+                    </div>
+                </div>
+                <div class="item-card">
+                    <img src="https://images.unsplash.com/photo-1551882547-ff43c63efe81?auto=format&fit=crop&w=800" class="item-img">
+                    <div class="item-body">
+                        <p class="item-location">Турция, Бодрум</p>
+                        <h3 class="item-title">Mandarin Oriental</h3>
+                        <div class="item-price">160 000 ₸ <span>/ ночь</span></div>
+                        <a href="#" class="btn-booking">Смотреть номера</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="page">
+            <h2 class="hero-text">DIRECT <span>CONNECT</span></h2>
+            <div class="contact-box">
+                <div>
+                    <div class="info-row">
+                        <i class="fas fa-phone-alt"></i>
+                        <div>
+                            <h4>Телефон для связи</h4>
+                            <p>8 777 777 77 77</p>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Наш главный офис</h4>
+                            <p>Алматы, пр. Достык 105</p>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Режим работы</h4>
+                            <p>24/7 — Мы всегда на связи</p>
+                        </div>
+                    </div>
+                    <a href="https://instagram.com" class="insta-large" target="_blank">
+                        <i class="fab fa-instagram"></i> МЫ В INSTAGRAM
+                    </a>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 25px;">ЗАКАЗАТЬ ОБРАТНЫЙ ЗВОНОК</h3>
+                    <form style="display: grid; gap: 15px;">
+                        <input type="text" placeholder="Ваше полное имя" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; border-radius: 12px; color: white; outline: none;">
+                        <input type="text" placeholder="+7 (___) ___ __ __" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; border-radius: 12px; color: white; outline: none;">
+                        <textarea rows="4" placeholder="Какое направление вас интересует?" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; border-radius: 12px; color: white; outline: none;"></textarea>
+                        <button class="btn-booking" type="button" style="background: var(--primary); border: none; cursor: pointer;">Отправить запрос</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>CORE SYSTEM V4.0 // NEURAL INTERFACE READY // © 2026 ZERO GRAVITY TRAVEL</p>
+    </footer>
+
+    <script>
+        const backgrounds = {
+            home: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1920&q=100',
+            tours: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=100',
+            hotels: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=100',
+            contact: 'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&w=1920&q=100'
+        };
+
+        function initBg() {
+            document.getElementById('bg-layer').style.backgroundImage = `url(${backgrounds.home})`;
+        }
+
+        function navigate(tabId, el) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            el.classList.add('active');
+
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            const bgLayer = document.getElementById('bg-layer');
+            bgLayer.style.opacity = '0';
+            
+            setTimeout(() => {
+                bgLayer.style.backgroundImage = `url(${backgrounds[tabId]})`;
+                bgLayer.style.opacity = '1';
+            }, 400);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
